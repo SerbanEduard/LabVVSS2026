@@ -1,5 +1,7 @@
 package drinkshop.domain;
 
+import java.io.Serializable;
+
 public class Product {
 
     private int id;

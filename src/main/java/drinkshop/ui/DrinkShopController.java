@@ -9,7 +9,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class DrinkShopController {
@@ -120,10 +122,17 @@ public class DrinkShopController {
             alert.showAndWait();
             return;
         }else
-        if (service.getAllProducts().stream().filter(p->p.getId()==r.getId()).toList().size()>0) {
+        if (service.getAllProducts().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Error");
             alert.setHeaderText("Exista un produs cu reteta adaugata.");
+            alert.showAndWait();
+            return;
+        }
+        if(txtProdPrice.getText().isEmpty() || txtReceipt.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText("Introduceti text in fiecare camp");
             alert.showAndWait();
             return;
         }
@@ -140,6 +149,13 @@ public class DrinkShopController {
     private void onUpdateProduct() {
         Product selected = productTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
+        if(txtProdPrice.getText().isEmpty() || txtReceipt.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+            alert.setHeaderText("Introduceti text in fiecare camp");
+            alert.showAndWait();
+            return;
+        }
         service.updateProduct(selected.getId(), txtProdName.getText(),
                 Double.parseDouble(txtProdPrice.getText()),
                 comboProdCategorie.getValue(), comboProdTip.getValue());
@@ -179,7 +195,7 @@ public class DrinkShopController {
 
     @FXML
     private void onAddNewReteta() {
-        Reteta r = new Reteta(service.getAllRetete().size()+1, new ArrayList<>(newRetetaList));
+        Reteta r = new Reteta(service.nextRetetaId(), new ArrayList<>(newRetetaList));
         service.addReteta(r);
         newRetetaList.clear();
         initData();
@@ -208,6 +224,7 @@ public class DrinkShopController {
         }
 
         currentOrderItems.add(new OrderItem(selected, qty));
+        service.comandaProdus(selected);
         updateOrderTotal();
     }
 

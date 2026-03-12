@@ -97,6 +97,13 @@ public class DrinkShopService {
         retetaService.addReteta(r);
     }
 
+    public int nextRetetaId() {
+        List<Reteta> retete = retetaService.getAll();
+        if(retete.isEmpty())
+            return 1;
+        else return retete.get(retete.size()-1).getId() + 1;
+    }
+
     public void updateReteta(Reteta r) {
         retetaService.updateReteta(r);
     }
